@@ -5,23 +5,50 @@ date: "2023-02-05"
 output: html_document
 ---
 
-```{r}
+
+# Introduction : 
+
+
+L'ojectif de ce travail est de de modéliser le comportement extrême des vagues dans le golfe du lion  à l’aide de la théorie des valeurs extrêmes étudiée en cours.
+Elle  s’étire sur 220 kilomètres de la Camargue à la frontière espagnole.
+Le littoral est sableux, ponctué seulement par quelques amers rocheux (Maguelone, Sète, Agde, Gruissan…). Meuble par nature, il s’est continuellement transformé ; la mer gagnant souvent sur les terres par élévation du niveau marin ou érosion côtière, mais le rivage a aussi avancé pendant de longues périodes grâce à l’apport de sédiments en provenance des fleuves. Des lagunes ont pu se former et parfois disparaitre, comme les « graus », qui font communiquer les étangs littoraux avec la mer. C’est donc un milieu naturellement dynamique.
+C'est  dans ce contexte que nous étudions le comportement extrême des vagues  de façon univariée  en considérant qu'une seule station puis d'un approche bivariée en consiérant des paires de stations. Nous disposons deux jeux de données " DonneesStations" est un dataframe contenant les coordonnées géographiques des 20 stations  et "DonneesVagues" est un dataframe contenant les hauteurs significatives de vagues horaires mesurées en chacune des stations précedentes de 1961 à 2012.
+Nous allons présenter les données dans partie suivante:
+
+##  Présentation de données:
+
+
+```{r message=FALSE}
 library(ismev)
 library(fExtremes)
 library(evd)
 library(rgl)
 ```
 
-# iMPORTER LEs  DONNEES
+# 
 
-```{r}
+```{r message=FALSE}
 load("C:\\Users\\NIASSE GUELADIO\\Downloads\\donneesVagues.RData")
 load("C:\\Users\\NIASSE GUELADIO\\Downloads\\donneesStations.RData")
 data1 <- donneesVague
 data2 <- buoysInfos
 attach(data1)
+#str(buoysInfos)
+str(donneesVague)
+
+summary(donneesVague)
+
 ```
 
+Voici un petit approche de notre jeux de données sur les vagues, elle constituée de 464280 observations pour les   21 variables. La date est indiquée et correspond à la première colonne, la premiére vague a été 
+Voici un tablau récapulatif des hauteurs mininals et maximal des différentes stations. Nous remarquons que 
+
+```{r}
+substr(data1,)
+```
+
+
+## Cas univariée : 
 Nous pouvons choisir 
 Calcul max par bloc  
 
@@ -30,15 +57,18 @@ Calcul max par bloc
 
 n=2880
 
-SA<-station1
-SB<-station2
+SA<-station2
+#SB<-station2
 
 max_SA<-rep(0,length(SA)/n)
 cat("le nombre de bloc est ",length(SA)/n,"\n")
 
 for(i in 1:(length(SA)/n)){ max_SA[i]<-max(SA[((i-1)*n+1):(i*n)])}
 maxfit<-gev.fit(max_SA)
+#
 plot(max_SA)
+
+plot(SA)
 
 
 
@@ -116,7 +146,7 @@ mrlplot(SA)
 ```
 1e5 semble etre une bonne choix
 ```{r }
-th=5.8
+th=3.6
 sagpd=fpot(SA,threshold=th)
 sagpd
 
@@ -133,12 +163,13 @@ le quantile plot  n'est pas trop mal donc le choix du seuille n'est pas mal
 
 maintenant calculons le depassement de 100 sinistre 
 ```{r }
-#p=1/100
+#p=1/100 
 #q=n*p=1/T
 #p=1/nT=1/mper
+
 T=1000
 q=1/T
-depas100=fpot(SA,threshold=th,npp=1,mper = n*100)
+depas100=fpot(SA,threshold=th,npp=1,mper = 100*n, std.err = F)
 cat(" le montant qui sera depasser tous les 100 ans est ", depas100$estimate[1],"par lautre methode on avais ",dep100$estimate[1])
 
 ```
@@ -182,24 +213,6 @@ cat(" l'intervalle de confiance à  95%  de l'estimateur  du depassement de 1000
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # PARIE II
 
 Question 1. Construction des max : Construire des maxs par bloc (max par composant).
@@ -208,7 +221,7 @@ Pour commencer, on pourra choisir des blocs de taille 30.
 ```{r}
 
 n=120*24
-SA<-station1
+SA<-station2
 SB=station9
 SASB=cbind(station8,station1)
 
