@@ -1,0 +1,134 @@
+%% Informations générales
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{homework}[2019/11/01 Custom Package]
+
+%----------------------------------------------------------------------------------------
+%  PACKAGES AND CONFIGURATION
+%----------------------------------------------------------------------------------------
+\RequirePackage{listingsutf8}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[french]{babel}% pour un document en français et anglais
+\RequirePackage{subfig}
+% réglages des marges du document
+\RequirePackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
+
+\RequirePackage{fancyhdr}% pour les entêtes et pieds de pages
+\RequirePackage{extramarks}% pour les entêtes et pieds de pages
+\setlength{\headheight}{14.2pt}% hauteur de l'entête
+\RequirePackage{lastpage}% détermine la dernière page pour les pieds de pages
+
+% pour de jolis titres de chapitres
+% autres styles: Sonny, Lenny, Glenn, Conny, Rejne, Bjarne, Bjornstrup
+%\RequirePackage[Lenny]{fncychap}
+
+\RequirePackage[most]{tcolorbox}% pour créer le cadre pour les réponses
+
+\RequirePackage{graphicx}% pour insérer images et pdf entre autres
+\graphicspath{{images/}}% pour spécifier le chemin d'accès aux images
+\RequirePackage{caption}% pour mettre un titre aux images, figures, etc...
+\RequirePackage{float}
+
+\RequirePackage{tikz}% pour dessiner des éléments graphiques
+
+\RequirePackage{csquotes}% pour la gestion des guillemets
+
+% extensions de l'ams pour les mathématiques
+\RequirePackage{amsmath,amsfonts,amssymb,amsthm}
+\RequirePackage{mathtools}
+\RequirePackage{bbm}
+\RequirePackage{dsfont}
+\RequirePackage{bbold}
+%  Ici on défini la mise en forme pour les définitions, 
+%  les théorèmes et les propriétés en mathématiques
+\theoremstyle{theorem}
+\newtheorem{theorem}{Théorème}[section]
+\theoremstyle{property}
+\newtheorem{property}{Propriété}[section]
+\theoremstyle{definition}
+\newtheorem{definition}{Définition}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remarque}
+
+\RequirePackage{xcolor}% pour la couleur des liens
+\RequirePackage[hidelinks]{hyperref}% rend actif les liens, références croisée, toc, ...
+
+% Package pour créer des tableaux
+\RequirePackage{array,multirow,makecell}
+\setcellgapes{1pt}
+\makegapedcells
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash }b{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash }b{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash }b{#1}}
+
+% éléments de la page de garde
+\newcommand{\logo}{logo_um}
+\newcommand{\myName}{Olivier CÔME \\Gueladio NIASSE}
+\newcommand{\studentNb}{Nº étudiant Olivier CÔME: 22110708 \\
+Nº étudiant Gueladio NIASSE: 21714307}
+\newcommand{\myEmail}{olivier.come@etu.umontpellier.fr \\
+gueladio.niasse@etu.umontpellier.fr}
+\newcommand{\univDegree}{Master 2}
+\newcommand{\sectionName}{Statistique et Science des Données}
+\newcommand{\universityName}{Université de Montpellier}
+\newcommand{\courseCode}{HAX005X}
+\newcommand{\courseName}{Valeurs extrêmes}
+\newcommand{\assignmentName}{Projet: Statistique des évènements extêmes et applications}
+\newcommand{\pubDate}{26 Février 2023}
+
+% configurations supplémentaires
+\setlength\parindent{0pt}% supprime les indentations des paragraphes
+\setlength\parskip{1pt}
+%\linespread{1.1}
+
+% entêtes et pieds de pages
+\pagestyle{fancy}
+\fancyhf{}% clears the header and footer, otherwise the elements of the default "plain" page style will appear.
+\lhead{\firstxmark}% entêtes à gauche
+\rhead{\assignmentName}% entêtes à droite
+\lfoot{\lastxmark}% pied de page à gauche
+\rfoot{Page\ \thepage\ sur\ \pageref{LastPage}}% pied de page à droite
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+%----------------------------------------------------------------------------------------
+%  DOCUMENT STRUCTURE (MACROS & ENVIRONMENTS)
+%----------------------------------------------------------------------------------------
+
+% Macro pour le titre du rapport sur la page de garde
+\newsavebox{\myReportTitle}
+\sbox{\myReportTitle}{
+	\begin{tabular*}{\textwidth}{@{}l@{}|@{\extracolsep{0.125in}}l@{}}
+		\parbox{4.25in}{\raggedright{\includegraphics[scale=0.37]{\logo.png}
+		\includegraphics[scale=0.38]{images/ssd_biostats.png}}} &
+		\parbox[c]{2.5in}{
+			{\textbf{\myName} \par}
+			{\small \studentNb \par}
+			{\small \myEmail \par}
+			{\small \univDegree \par}
+			{\small \sectionName \par}
+			{\small \universityName \par}
+		}
+	\end{tabular*}
+}
+
+% information sur la section dans les entêtes et pieds de pages
+\newcommand{\enterSectionHeaderFooter}[1]{
+	\nobreak\extramarks{#1}{#1 suite sur la page suivante\ldots}\nobreak
+	\nobreak\extramarks{#1 (suite)}{#1 suite sur la page suivante\ldots}\nobreak
+}
+\newcommand{\exitSectionHeaderFooter}[1]{
+	\nobreak\extramarks{#1 (suite)}{#1 suite sur la page suivante\ldots}\nobreak
+	\nobreak\extramarks{#1}{}\nobreak
+}
+
+% défini la commande pour les réponses aux questions
+\newcommand{\answer}[1]{
+	\begin{tcolorbox}[breakable,enhanced,colback=gray!5!white,title=Réponse]
+		#1
+	\end{tcolorbox}
+}
+
+
+%% Fin du package
+\endinput

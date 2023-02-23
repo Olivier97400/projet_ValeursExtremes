@@ -1,0 +1,79 @@
+\documentclass[a4paper,french,10pt]{article}
+\usepackage{homework}
+\usepackage{diagbox}
+
+% change le nom de la table des matières
+\addto\captionsfrench{\renewcommand*\contentsname{Sommaire}}
+
+\lstdefinelanguage{R}%
+{morekeywords={function,for,in,if,elseif,else,TRUE,FALSE,%
+		return, while, diag, sum, sqrt, nrow, ncol, par, plot, cbind, rep, as, survdiff, survreg, ifelse, anova,
+		row, names, colnames, mean, data, frame, model, in, list, rexp, rpois, summary,
+		matrix, TRUE, FALSE, for, if, else, function, NA, print, survfit, Surv, rho, ggplot},%
+	sensitive=true,%
+	morecomment=[l]{\#},%
+	morestring=[s]{"}{"},%
+	morestring=[s]{'}{'},%
+}[keywords,comments,strings]%
+
+\lstset{%
+	language         = R,
+	basicstyle       = \ttfamily,
+	keywordstyle     = \bfseries\color{blue},
+	stringstyle      = \color{magenta},
+	commentstyle     = \color{olive},
+	showstringspaces = false,
+}
+
+\begin{document}
+	
+	% Blank out the traditional title page
+	\title{\vspace{-1in}} % no title name
+	\author{} % no author name
+	\date{} % no date listed
+	\maketitle % makes this a title page
+	
+	% Use custom title macro instead
+	\usebox{\myReportTitle}
+	\vspace{1in} % spacing below title header
+	
+	% Assignment title
+	{\centering \huge \assignmentName \par}
+	{\centering \noindent\rule{4in}{0.1pt} \par}
+	\vspace{0.05in}
+	{\centering \courseCode~: \courseName~ \par}
+	{\centering Rédigé le \pubDate\ en \LaTeX \par}
+	\vspace{1in}
+	
+	% Table of Contents
+	\tableofcontents
+	\newpage
+	
+	%----------------------------------------------------------------------------------------
+	%	EXERCICE 1
+	%----------------------------------------------------------------------------------------
+	
+\section{Introduction}
+Gueladio wolof	
+
+%\lstinputlisting[language=R, firstline=2, lastline=13]{code/TP3_NIASSE_COME.R}
+
+%\begin{figure}[htp] 
+%	\centering
+%	\includegraphics[scale=0.45]{images/courbe1.png}
+%	\caption{Comparaison entre l'estimation de la fonction de Nelson-Aelen et celle de la loi de Weibull avec un taux de censure de 13,8\%}
+%\end{figure}
+
+%\begin{figure}[htp] 
+%	\centering
+%	\subfloat[Taux de censure à 25\%]{%
+%			\includegraphics[scale=0.4]{images/c25.png}%
+%		}%
+%	\hfill%
+%	\subfloat[Taux de censure à 34\%]{%
+%			\includegraphics[scale=0.4]{images/c30.png}%
+%		}%
+%	\caption{Estimation de la fonction de Nelson-Aelen et de la loi de Weibull}
+%\end{figure}
+
+\end{document}
