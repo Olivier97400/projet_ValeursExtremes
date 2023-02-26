@@ -7,7 +7,7 @@ load("C:\\Users\\olivi\\Documents\\Montpellier\\M2_SSD\\semestre2\\Valeurs_extre
 data1 <- donneesVague
 data2 <- buoysInfos
 attach(data1)
-#str(buoysInfos)
+
 str(donneesVague)
 
 summary(donneesVague)
@@ -29,14 +29,14 @@ print(li_divisor)
 n=2920
 
 SA<-station2
-#SB<-station2
+
 
 max_SA<-rep(0,length(SA)/n)
 cat("le nombre de bloc est ",length(SA)/n,"\n")
 
 for(i in 1:(length(SA)/n)){ max_SA[i]<-max(SA[((i-1)*n+1):(i*n)])}
 maxfit<-gev.fit(max_SA)
-#
+
 plot(max_SA)
 
 plot(SA)
@@ -123,7 +123,7 @@ cat(
   "par l'autre methode on avais ",dep1000$estimate[1]
   )
 
-# Partie bivariée
+# Partie II bivariée
 SB = station9
 li_divisor = c()
 s = length(SA)
@@ -202,7 +202,7 @@ for(i in  a){
 aic
 
 
-#c le model logistique qui a la plus faible AIC donc c est le meilleur model 
+# le model logistique qui a le plus faible AIC donc c'est le meilleur model 
 #ajustons le
 
 mod_log <- fbvevd(maxSASB, model = "log")
@@ -211,7 +211,7 @@ par(mfrow=c(3,2))
 plot(mod_log)
 
 
-# d)  Comparer les 2 modèles et discuter de la dépendance présente dans 
+# Comparer les 2 modèles et discuter de la dépendance présente dans 
 #les extrémes
 
 
@@ -311,77 +311,3 @@ mod_log <- fbvevd(maxSBSD, model = "log")
 mod_log
 par(mfrow=c(3,2))
 plot(mod_log)
-
-
-# Cette fonction renvoie les indices des
-# valeurs maximales des blocs endroit où on met les lignes rouges
-GetIndexMaxBlock = function(df, m){
-  d = dim(df)[1]
-  n = d/m
-  vIndexMaxBloc = c()
-  comp = n
-  while (comp <= d) {
-    vIndexMaxBloc = c(vIndexMaxBloc,comp)
-    comp = comp+n
-  }
-  return(vIndexMaxBloc)
-}
-
-# Cette fonction récupère les data
-# de chaque blocs
-GetListOfBloc = function(df, li){
-  Data = df
-  j = 1
-  k = 1
-  l_block = list()
-  for(e in li){
-    v_block = c()
-    for (i in j:e) {
-      v_block = c(v_block, Data[i,1])
-    }
-    l_block[[k]] = v_block 
-    j = e+1
-    k = k+1
-  }
-  return(l_block)
-}
-
-vIndexMaxBloc = GetIndexMaxBlock(SA, 159)
-listOfBlock = GetListOfBloc(SA, vIndexMaxBloc)
-
-
-# Cette fonction récupère les valeurs maximales
-# de chaque blocs
-GetListOfMax = function(liste){
-  v_max = c()
-  for (i in 1:(length(liste))) {
-    vi = liste[[i]]
-    max_val = max(vi)
-    v_max = c(v_max, max_val)
-  }
-  return(v_max)
-}
-
-VecOfMax = GetListOfMax(listOfBlock)
-
-# Cette fonction récupère l'indexe des valeurs maximales
-# de chaque blocs
-GetIndexOfMax = function(df, v_max){
-  vIndexOfMax = c()
-  for (e in v_max) {
-    ind = match(e, df[,1])
-    vIndexOfMax = c(vIndexOfMax, ind)
-  }
-  return(vIndexOfMax)
-}
-
-ind_max = GetIndexOfMax(SA, VecOfMax)
-
-plot(SA[,1])
-abline(v = vIndexMaxBloc, col="red", lwd=1.5, lty=1)
-
-points(ind_max, SA[ind_max,1], pch = c(16), col='blue')
-
-# Methode PLOT
-#valUnderThreshold = function(threshold){
-#}
