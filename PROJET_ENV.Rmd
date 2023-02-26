@@ -258,19 +258,20 @@ print(li_divisor)
 n=2920
 SA<-station2
 SB=station9
-SASB=cbind(station8,station1)
+SASB=cbind(SA,SB)
 
 max_SA<-rep(0,length(SA)/n)
-max_SB<-rep(0,length(SA)/n)
+max_SB<-rep(0,length(SB)/n)
 cat("le nombre de bloc est ",length(SA)/n,"\n")
+cat("le nombre de bloc est ",length(SB)/n,"\n")
 
 for(i in 1:(length(SA)/n)){ max_SA[i]<-max(SA[((i-1)*n+1):(i*n)])
 max_SB[i]<-max(SB[((i-1)*n+1):(i*n)])}
 
 maxSASB=data.frame(max_SA,max_SB)
 par(mfrow=c(1,2))
-plot(max_SB,main= "maxima de SB" )
-plot(max_SA,main= "maxima de SA" )
+plot(max_SB,main= "maxima de SB", col='red' )
+plot(max_SA,main= "maxima de SA" , col='blue')
 ```
 
 Question 2. Etude univariée : On se retrouve ainsi avec un échantillon de 96 maxima. Effectuer un ajustement par une loi GEV sur chacune des 2 marginales.
@@ -279,7 +280,10 @@ ajustement de SA
 
 ```{r}
  gev_SA=gev.fit(max_SA)
- gev_SB=gev.fit(max_SB)
+gev_SB=gev.fit(max_SB)
+summary(gev_SA)
+ 
+
 parametre_SA=c(gev_SA$mle[1],gev_SA$mle[2],gev_SA$mle[3])
 parametre_SB=c(gev_SB$mle[1],gev_SB$mle[2],gev_SB$mle[3])
 

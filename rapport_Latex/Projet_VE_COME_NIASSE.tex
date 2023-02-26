@@ -57,6 +57,8 @@
 \section{Introduction}
 Dans le cadre de ce projet, nous allons modéliser le comportement extrême des vagues dans le golfe du lion à l'aide des méthodes vue à travers l'unité d'enseignement HAX005X "valeurs extrêmes". D'après la source \cite{golfLion}, le golf s'étale sur 220 kilomètres de la Camargue à la frontière espagnole. La côte, essentiellement sableuse, a été façonnée par la houle (la mer gagnant souvent les terres par élévation du niveau marin) et l'érosion côtière. L'apport de sédiments en provenance des fleuves a également permis de faire avancer le rivage pendant de longues périodes. Des formations de lagunes "comme les graus" (parfois temporaires) ont pu apparaitre et ont permis de faire communiquer les étangs littoraux avec la mer. Le golf du Lion est donc un milieu naturellement dynamique. C'est dans ce contexte que nous étudions le comportement extrême des vagues à cet endroit, de façon univariée dans un premier temps puis de façon bivariée dans un second temps. 
 
+\newpage
+
 \section{Présentation des données}
 
 Les données que nous avons à notre disposition pour ce projet sont les suivantes:
@@ -253,11 +255,221 @@ Quand on regarde le tableau \ref{tab3}, on constate que le niveau de retour pour
 
 \section{Partie bivariée}
 Dans cette nouvelle partie, on se place maintenant dans le cas bivarié.
-Pour mener à bien les analyses nous mettrons en œuvre l'approche \textit{GEV} (Generalized Extreme Value). L'objectif sera de prédire la valeur du quantile extrême $z_p$ vérifiant:
+L'objectif sera de prédire la valeur du quantile extrême $z_p$ vérifiant:
+\begin{equation}
+	\label{quantile_extreme}
+	\mathbb{P}(X > z_p | Y > y) = \frac{\mathbb{P}(X > z_p \cap Y > y)}{\mathbb{P}(Y > y)}
+\end{equation}
+avec $p$ petit et où $Y$ correspond à la hauteur de vagues associées à la station 2 ($S_A$) et $X$ à la hauteur de vagues associées à la station 9 ($S_B$). \\
+Pour mener à bien les analyses dans toute la suite de ce projet, nous mettrons en œuvre uniquement l'approche \textit{GEV} (Generalized Extreme Value) car nous avons vu précédemment que cette dernière fournissait de meilleurs résultats que l'approche GPD dans le cas de nos données. Tout comme dans le cas univarié, nous allons nous aider de la méthode par blocs. Afin de réaliser des analyses de bonnes qualités, nous devons correctement choisir la taille $n$ des blocs. En nous aidant encore une fois du script (disponible en annexe) affichant tous les diviseurs de $464280$, on décide de prendre $m = 2980$ blocs, tous de même taille $n = 159$.
+
+\subsection{Analyse entre les stations 2 et 9}
+
+Sur la figure \ref{max_SB_SA} nous avons tracé deux nuages de points. Les points du nuage rouge correspondent aux maximums de chaque bloc dans le cas de la station $S_B$ et ceux du nuage bleu aux maximums de chaque bloc dans le cas de la station $S_A$. Les points des deux nuages sont assez ben dispersés.
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/max_SB_SA.png}
+	\caption{Nuage de points obtenu avec la methode par bloc pour $S_B$ et $S_A$}
+	\label{max_SB_SA}
+\end{figure}
+
+Nous allons maintenant effectuer un ajustement par une loi GEV sur chacune de deux marginales et nous allons récupérer les paramètres pour chaque ajustement des marginales. Nous les avons affiché dans le tableau \ref{param}.
+
+\begin{table}[htp]
+	\center
+	\begin{tabular}{|c||c|c|}
+		\hline
+		 & Paramètres $S_A$ & Paramètres $S_B$\\
+		\hline
+		$\widehat{\mu}$ & $1.9483809$ & $3.4137728$ \\
+		\hline
+		$\widehat{\sigma}$ & $0.6317954$ & $0.9391569$ \\
+		\hline
+		$\widehat{\gamma}$ & $-0.1636501$ & $-0.1620597$ \\
+		\hline
+	\end{tabular}
+	\caption{paramètres des ajustement des marginales}
+	\label{param}
+\end{table}
+
+Calculons la probabilité de l'équation \ref{quantile_extreme}. \\
+Les paramètres du tableau \ref{param} vont nous aider à calculer cette probabilité. En effet, il seront utilisés dans la fonction $pgev$ de $R$ qui va nous permettre de déterminer le dénominateur $\mathbb{P}(Y > y)$.\\
+on rappelle qu'ici, à titre d'exemple nous avons choisi la valeur $y = 4$. \\
+Après calcul, on trouve que $\mathbb{P}(Y > 4)=0.4041958$. \\
+Nous avons également besoin de calculer le numérateur à savoir $\mathbb{P}(X > z_p \cap Y > y)$. \\
+La fonction $fbvevd$ de $R$ nous permettra de récupérer les paramètres ($loc$,$scale$ et $shape$) nécessaires au calcul du numérateur. La valeur de ce dernier est ensuite obtenu via la fonction $pbvevd$ et on obtient que $\mathbb{P}(X > z_p \cap Y > 4) = 0.01589988$.\\
+On en déduit donc que $\mathbb{P}(X > z_p | Y > 4) = 0.03933707$. C'est à dire que la probabilité que la hauteur de la vague de la station 9 soit supérieure $z_p$ sachant que la hauteur de la vague de la station 2 est supérieur à 4 vaut environ $3.93\%$.
+
+\vspace{4mm}
+
+Nous allons maintenant procéder à une analyse bivarié entre les stations 2 et 9. La figure \ref{double_max} représente la hauteurs maximales des vagues selon les blocs pour les stations 2 et 9. Après observation de ce nuage de points, il semblerait que les données des deux stations ne soient pas corrélées entre elles car le nuage est assez dispersé. 
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/double_max.png}
+	\caption{hauteurs maximales des vagues selon les blocs pour les station 2 et 9}
+	\label{double_max}
+\end{figure}
+
+Dans la suite de cette partie, nous allons faire des analyses plus fines afin de vérifier si notre hypothèse d'indépendance entre les données des deux stations est juste ou pas. Pour ce faire nous allons utiliser deux différents modèles d'estimation paramétrique à savoir le modèle logistique et celui logistique asymétrique. Nous allons ensuite sélectionner le meilleur de ces deux modèles à l'aide du critère AIC.
+D'après la source \cite{AIC}, le critère AIC se définit de la manière suivante:
 \[
-	\mathbb{P}(X > z_p | Y > y)
+	AIC = 2k - 2 ln(L)
 \]
-avec $p$ petit et où $Y$ correspond à la hauteur de vagues associées à la station 2 ($S_A$) et $X$ à la hauteur de vagues associées à la station 9 ($S_B$).
+
+Où $k$ est le nombre de paramètres à estimer du modèle et $L$ est le maximum de la fonction de vraisemblance du modèle. \\
+D'après la capture d'écran de la figure \ref{AIC_2_9}, le modèle logistique est celui ayant l'AIC le plus faible avec une valeur de $763.3703$ contre $766.2632$ pour le modèle logistique asymétrique. On en déduit donc que le meilleur des deux modèles est celui logistique ($log$) et c'est donc ce dernier que nous sélectionnerons.
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/AIC_stations2_9.png}
+	\caption{AIC des modèles $log$ et $alog$}
+	\label{AIC_2_9}
+\end{figure}
+
+Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log}, on voit que la valeur du paramètre dépendance vaut $0.3738562$. Il est proche de zéro, on en déduit donc que les données des stations 9 et 2 ne sont pas corrélées entre elles. Notre hypothèse d'indépendance des données est donc valide.
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/dependance_log.png}
+	\caption{Vérification de la validité de l'hypothèse d'indépendance}
+	\label{dependance_log}
+\end{figure}
+
+\subsection{Analyse entre les stations 2 et 7}
+Dans cette partie, nous cherchons dans un premier temps une station notée $S_C$ qui est plus proche de $S_A$ que $S_B$. Une fois que nous l'aurons trouvé, nous ferons une analyse entre notre station de référence $S_A$ et la nouvelle station $S_C$.
+Pour déterminer $S_C$, nous avons utiliser la norme euclidienne présentée dans le document \cite{norme_euclid} et nous avons appliqué les formules \ref{euclidienne1} et \ref{euclidienne2} sur les coordonnées géographiques des stations (longitude et latitude) disponibles dans le dataframe \textit{DonneesStations}.
+
+\begin{equation}
+	\label{euclidienne1}
+	\sqrt \Big(  (longitude[S_A] - longitude[S_C])^2 + (latitude[S_A] - latitude[S_C])^2 \Big)
+\end{equation}
+
+\begin{equation}
+	\label{euclidienne2}
+	\sqrt \Big(  (longitude[S_C] - longitude[S_B])^2 + (latitude[S_C] - latitude[S_B])^2 \Big)
+\end{equation}
+
+En prenant $S_C = station7$, nous obtenons après application des formules \ref{euclidienne1} et \ref{euclidienne2} que :
+\begin{align*}
+	|| \overrightarrow{S_A S_C} || &=  2.13305 \\
+	|| \overrightarrow{S_C S_B} || &=  3.018848
+\end{align*}
+Donc le choix de la station 7 est valide car cette dernière est effectivement plus proche de $S_A$ que $S_B$.
+
+\vspace{3mm}
+
+Sur la figure \ref{max_SA_SC} nous avons tracé deux nuages de points. Les points du nuage magenta correspondent aux maximums de chaque bloc dans le cas de la station $S_C$ et ceux du nuage bleu clair aux maximums de chaque bloc dans le cas de la station $S_A$. Les points des deux nuages sont assez ben dispersés.
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/max_SA_SC.png}
+	\caption{Nuage de points obtenu avec la methode par bloc pour $S_A$ et $S_C$}
+	\label{max_SA_SC}
+\end{figure}
+
+Nous allons maintenant procéder à une analyse bivariée entre les stations 2 et 7. La figure \ref{double_max2} représente les hauteurs maximales des vagues selon les blocs pour les stations 2 et 7. Après observation de ce nuage de points, il semblerait que les données des deux stations soient moins dispersées que celles des stations 2 et 9 (voir figure \ref{double_max}).
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/double_max2.png}
+	\caption{hauteurs maximales des vagues selon les blocs pour les station 2 et 7}
+	\label{double_max2}
+\end{figure}
+
+Dans la suite de cette partie, nous allons faire des analyses plus fines afin de voir s'il y a plus de corrélations entre les données des stations 2 et 7. Logiquement vu que les stations 2 et 7 sont plus proches l'une de l'autre que les stations 2 et 9, il devrait y avoir ici plus de corrélations. Vérifions le. pour ce faire nous allons encore une fois utiliser les modèles d'estimation paramétrique logistique et celui logistique asymétrique. Nous allons ensuite sélectionner le meilleur de ces deux modèles à l'aide du critère AIC.
+
+D'après la capture d'écran de la figure \ref{AIC_2_7}, le modèle logistique est celui ayant l'AIC le plus faible avec une valeur de $590.3655$ contre $596.5881$ pour le modèle logistique asymétrique. On en déduit donc que le meilleur des deux modèles est celui logistique ($log$) et c'est donc ce dernier que nous sélectionnerons.
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/AIC_stations2_7.png}
+	\caption{AIC des modèles $log$ et $alog$}
+	\label{AIC_2_7}
+\end{figure}
+
+Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log2}, on voit que la valeur du paramètre dépendance vaut $0.5290586$. Il est donc plus grand que dans le cas des stations 2 et 9 (voir figure \ref{dependance_log}). Ceci est parfaitement cohérent avec ce que l'on avait dit précédemment. En effet, plus l'on va prendre de stations proches entre elles et plus il y aura de corrélations entre les données de ces dernières.
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/dependance_log2.png}
+	\caption{Vérification de la validité de l'hypothèse d'indépendance}
+	\label{dependance_log2}
+\end{figure}
+
+
+\subsection{Analyse entre les stations 9 et 4}
+Dans cette partie, nous cherchons dans un premier temps une station notée $S_D$ qui est plus proche de $S_B$ que $S_A$. Une fois que nous l'aurons trouvé, nous ferons une analyse entre la station $S_B$ et la nouvelle station $S_D$.
+Pour déterminer $S_D$, nous avons utiliser comme dans la partie précédente, la norme euclidienne et nous avons appliqué les formules \ref{euclidienne3} et \ref{euclidienne4} sur les coordonnées géographiques des stations (longitude et latitude) disponibles dans le dataframe \textit{DonneesStations}.
+
+\begin{equation}
+	\label{euclidienne3}
+	\sqrt \Big(  (longitude[S_D] - longitude[S_B])^2 + (latitude[S_D] - latitude[S_B])^2 \Big)
+\end{equation}
+
+\begin{equation}
+	\label{euclidienne4}
+	\sqrt \Big(  (longitude[S_A] - longitude[S_D])^2 + (latitude[S_A] - latitude[S_D])^2 \Big)
+\end{equation}
+
+En prenant $S_D = station4$, nous obtenons après application des formules \ref{euclidienne1} et \ref{euclidienne2} que :
+\begin{align*}
+	|| \overrightarrow{S_B S_D} || &=  2.40698 \\
+	|| \overrightarrow{S_A S_D} || &=  2.604918
+\end{align*}
+Donc le choix de la station 4 est valide car cette dernière est effectivement plus proche de $S_B$ que $S_A$.
+
+\vspace{3mm}
+
+Sur la figure \ref{max_SB_SD} nous avons tracé deux nuages de points. Les points du nuage orange correspondent aux maximums de chaque bloc dans le cas de la station $S_C$ et ceux du nuage vert aux maximums de chaque bloc dans le cas de la station $S_A$. Les points des deux nuages sont assez bien dispersés.
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/max_SB_SD.png}
+	\caption{Nuage de points obtenu avec la méthode par bloc pour $S_B$ et $S_D$}
+	\label{max_SB_SD}
+\end{figure}
+
+Nous allons maintenant procéder à une analyse bivariée entre les stations 9 et 4. La figure \ref{double_max3} représente les hauteurs maximales des vagues selon les blocs pour les stations 9 et 4. Après observation de ce nuage de points, il semblerait que les données des deux stations soient moins dispersées que celles des stations 2 et 9 (voir figure \ref{double_max}).
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/double_max3.png}
+	\caption{hauteurs maximales des vagues selon les blocs pour les station 9 et 4}
+	\label{double_max3}
+\end{figure}
+
+Dans la suite de cette partie, nous allons faire des analyses plus fines afin de voir s'il y a plus de corrélations entre les données des stations 9 et 4. Logiquement vu que les stations 9 et 4 sont plus proches l'une de l'autre que les stations 2 et 9, il devrait y avoir ici plus de corrélations. Vérifions le. pour ce faire nous allons encore une fois utiliser les modèles d'estimation paramétrique logistique et celui logistique asymétrique. Nous allons ensuite sélectionner le meilleur de ces deux modèles à l'aide du critère AIC.
+
+\newpage
+
+D'après la capture d'écran de la figure \ref{AIC_9_4}, le modèle logistique est celui ayant l'AIC le plus faible avec une valeur de $857.6410$ contre $862.1909$ pour le modèle logistique asymétrique. On en déduit donc que le meilleur des deux modèles est celui logistique ($log$) et c'est donc ce dernier que nous sélectionnerons.
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/AIC_stations9_4.png}
+	\caption{AIC des modèles $log$ et $alog$}
+	\label{AIC_9_4}
+\end{figure}
+
+Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log3}, on voit que la valeur du paramètre dépendance vaut $0.383155$. Il est donc légèrement plus grand que dans le cas des stations 2 et 9 (voir figure \ref{dependance_log}). Ici la station $S_D$ est légèrement plus proche de $S_B$ qu'elle ne l'est de $S_A$, c'est pourquoi la corrélation entre les données de $S_B$ et $S_D$ n'est que légèrement plus grande que celle entre les données de $S_A$ et $S_B$. Si l'on voudrait avoir une corrélation plus élevée, il faudrait choisir une station qui serait à la fois encore plus proche de $S_B$ et encore plus éloigné de $S_A$. Au final, même si ici la différence est moins marquante que pour la station 2 et 7, on constate toujours que plus l'on va prendre de stations proches entre elles et plus il y aura de corrélations entre les données de ces dernières.
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/dependance_log3.png}
+	\caption{Vérification de la validité de l'hypothèse d'indépendance}
+	\label{dependance_log3}
+\end{figure}
+
+\newpage
+
+\section{Conclusion}
+À travers ce projet, nous avons pu voir qu'au file des années, nous serons confrontés à des valeurs extrêmes de vagues de plus en plus grandes. Cela est sans aucun doute une conséquence de la hausse des températures et en particulier de la monté du niveau des oceans. Nous comprenons donc pourquoi la lutte contre le réchauffement climatique est au cœur des enjeux scientifiques actuels. D'autre part, nous avons pu constater que plus nous prendrons des mesures issues de stations proches et plus les données associées à ces dernières seront fortement corrélées. 
+
+%A l'aide de la commande fbvevd, ajuster un modèle asymétrique logistique.
+%
+%D'après le tableau des AIC ci-dessus, le moins mauvais modèle est celui asymétrique logistique. on voit que les estimation des lois marginales ont quasiment les mêmes paramètres que celle obtenue avec la methode univarié donc il n'est pas utilse de faire de transformations.
+
+\newpage
+
 \section{Bibliographie}
 
 \renewcommand\refname{}
@@ -265,6 +477,14 @@ avec $p$ petit et où $Y$ correspond à la hauteur de vagues associées à la st
 	\bibitem{golfLion}
 	\url{https://reporterre.net/Le-golfe-du-Lion-est-tres-vulnerable-a-la-montee-des-eaux}
 	page web rédigée par Alexandre Brun et Benoît Devillers
+	
+	\bibitem{AIC}
+	\url{https://fr.wikipedia.org/wiki/Crit%C3%A8re_d%27information_d%27Akaike}
+	page web Wikipédia
+	
+	\bibitem{norme_euclid}
+	\url{https://www.normalesup.org/~simonet/teaching/caml-prepa/tp-caml-2001-02.pdf}
+	TP MPSI – Option Informatique rédigé par Vincent Simonet en 2021
 \end{thebibliography}
 
 
