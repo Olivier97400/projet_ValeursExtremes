@@ -53,11 +53,221 @@
 	%	EXERCICE 1
 	%----------------------------------------------------------------------------------------
 	
-\section{Introduction}
-Gueladio wolof	
 
-\section{Le jeu de données}
-Les données que nous allons étudier dans le cadre de ce projet, correspondent à des enregistrements de hauteurs de vagues significatives de 20 stations situées dans le golf du Lion. Notre jeu de données est constituée de 464280 observations (en lignes) et de 21 variables (en colonnes). La date est indiquée et correspond à la première colonne, la premiére vague a été Voici un tablau récapulatif des hauteurs mininals et maximal des différentes stations.
+\section{Introduction}
+Dans le cadre de ce projet, nous allons modéliser le comportement extrême des vagues dans le golfe du lion à l'aide des méthodes vue à travers l'unité d'enseignement HAX005X "valeurs extrêmes". D'après la source \cite{golfLion}, le golf s'étale sur 220 kilomètres de la Camargue à la frontière espagnole. La côte, essentiellement sableuse, a été façonnée par la houle (la mer gagnant souvent les terres par élévation du niveau marin) et l'érosion côtière. L'apport de sédiments en provenance des fleuves a également permis de faire avancer le rivage pendant de longues périodes. Des formations de lagunes "comme les graus" (parfois temporaires) ont pu apparaitre et ont permis de faire communiquer les étangs littoraux avec la mer. Le golf du Lion est donc un milieu naturellement dynamique. C'est dans ce contexte que nous étudions le comportement extrême des vagues à cet endroit, de façon univariée dans un premier temps puis de façon bivariée dans un second temps. 
+
+\section{Présentation des données}
+
+Les données que nous avons à notre disposition pour ce projet sont les suivantes:
+\begin{itemize}
+	\item \textbf{DonneesStations}
+	\item \textbf{DonneesVagues}
+\end{itemize}
+Pour réaliser les analyses, nous utiliserons essentiellement les données en provenance du dataframe \textit{DonneesVagues} qui correspondent à des enregistrements de hauteurs de vagues significatives horaires de 20 stations situées dans le golf du Lion. Ces mesures horaires ont été enregistrée de 1961 à 2012. Ce dataframe est constitué de 464280 observations (en lignes) et de 21 variables (en colonnes). Decrivons un peu plus en détaille les colonnes de ce dataframe \textit{DonneesVagues}:
+\begin{itemize}
+	\item \textbf{date} nous renseignent sur la date (format année mois jours) et l'heure précise (format heure minute seconde) à laquelle a été enregistrée la mesure.
+	\item \textbf{station 1 à 20} nous renseigne sur les hauteurs de la vagues mesurées
+\end{itemize}
+Le deuxième dataframe \textit{DonneesStations}, quant à lui nous renseigne sur les coordonnées géographique des 20 stations. Il est composé de 20 observation (lignes) et de 5 variables (colonnes). Décrivons un peu plus en détaille les colonnes de ce dataframe.
+\begin{itemize}
+	\item \textbf{lon:} floatant correspondant à la longitude de la station
+	\item \textbf{lat:} floatant correspondant à la latitude de la station
+	\item \textbf{depth:} floatant correspondant à la profondeur de la station
+	\item \textbf{stationName:} Chaine de caractère indiquant le nom de la station
+\end{itemize}
+Les figures \ref{data1} et \ref{data2} sont des captures d'écran d'une portion des dataframe \textit{DonneesVagues} et \textit{DonneesStations}. La figure \ref{data} correpond au nuage de points des données du dataframe \textit{DonneesVagues}.
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/data1.png}
+	\caption{Extrait du dataframe \textit{DonneesVagues}}
+	\label{data1}
+\end{figure}
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/data2.png}
+	\caption{Extrait du dataframe \textit{DonneesStations}}
+	\label{data2}
+\end{figure}
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/graph_data.png}
+	\caption{Nuage de points des données \textit{DonneesVagues}}
+	\label{data}
+\end{figure}
+
+\newpage
+
+Dans ce projet nous réaliserons dans un premier les analyses dans le cas univarié, c'est à dire en ne considérant qu'une seule station puis nous ferons une analyse bivarié en considérant cette fois-ci plusieurs stations.
+
+\section{Partie Univariée}
+Dans cette partie nous serons dans le cas univarié en nous considérerons la station 2.
+Pour mener à bien les analyses nous mettrons en œuvre deux approches. Dans un premier temps nous utiliserons la méthode \textit{GEV} (Generalized Extreme Value) puis dans un second temps nous utiliserons la méthode \textit{GPD}(Generalized Pareto
+distribution).
+\subsection{Approche GEV}
+Pour réaliser l'étude avec l'approche GEV nous allons nous aider de la méthode par blocs.
+
+Au départ, on suppose avoir des réalisations indépendantes et de même loi F d’un certain
+phénomène d’intérêt : $X_1, X_2,\dots, X_k$. \\
+Dans notre cas nous avons la station 2 comme station de référence (SA).
+Pour obtenir un échantillon de max, on découpe les données en m blocs de
+même taille n:
+\[
+	\underbrace{X_1, X_2,\dots, X_n}_{Z1}| \underbrace{X_{n+1}, X_{n+2},\dots, X_{2n}}_{Z2}| \dots |\underbrace {X_{(m-1)n+1}, \dots, X_{mn}}_{Zm}|
+\]
+
+On obtient alors un échantillon de $m$ réalisations de loi GEV : $Z_1, Z_2,\dots, Z_m$. %nous pouvons l'illustrer comme suit:
+
+ Afin de faire des analyses de bonnes qualités il est nécessaire de sélectionner une taille de bloc $n$ adéquat. comme il a été dit précédemment, le dataframe \textit{DonneesVagues} est composé de $464280$ lignes.
+Afin de choisir une bonne valeur de $n$, nous avons fait un script (disponible en annexe) qui affiche tous les diviseurs de $464280$, ces derniers sont affichés en figure \ref{diviseurs}. À partir de là nous avons pu tester plusieurs valeurs de $m$ et nous avons finalement pris $m=2980$. Nous aurons donc $2980$ blocs tous de même taille $n=159$. Nous allons maintenant justifier pourquoi nous avons décidé de retenir cette valeur. \\
+Les points du graphique de la figure \ref{graph_max}, correspondent aux maximums de chaque blocs. Comme on peut le voir, le nuage de point obtenu est assez dispersé ce qui nous conforte dans l'idée que le paramètre $n$ a été bien choisi. \\
+D'autre part, nous allons également nous appuyer sur le graphique du \textit{Quantile plot} afin de voir si le paramètre $n$ a bien été choisi. On rappel que le Quantile plot est le nuage de points: \\
+
+\[
+	\Bigl\{\Big(\widehat{G}^{-1}\Big(\frac{i}{m+1}\Big),z_{i,m}\Big), i = 1,\dots, m\Bigr\}
+\]
+
+Où
+
+\[
+	\widehat{G}(\frac{i}{m+1}) = \widehat{\mu} - \frac{\widehat{\sigma}}{\widehat{\gamma}} \Big[ 1- \Big(-log\Big(\frac{i}{i+1}\Big)\Big)^{-\widehat{\gamma}}\Big]
+\]
+
+Si l'on observe le graphique de la figure \ref{qplot}, on s'aperçoit que les points du nuages sont proches de la diagonale (ligne bleu) donc l'ajustement est de bonne qualité, la taille des blocs retenu pour l'approche GEV a donc bien été choisi. 
+
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/diviseurs.png}
+	\caption{liste des diviseurs de $464280$}
+	\label{diviseurs}
+\end{figure}
+ 
+ \begin{figure}[htp] 
+ 	\centering
+ 	\includegraphics[scale=0.45]{images/graph_max.png}
+ 	\caption{nuage de points obtenu avec la méthode par bloc}
+ 	\label{graph_max}
+ \end{figure}
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/quantilePlotUnivarie.png}
+	\caption{Quantile plot}
+	\label{qplot}
+\end{figure}
+
+\newpage
+
+\subsubsection{Niveaux de retour associés aux périodes de retour $100$, $500$ et $1000$}
+
+Dans cette sous-section, nous allons nous intéresser aux niveaux de retour $x_{\frac{1}{T}}$ associés aux périodes de retour $T = \frac{1}{q}$ pour $T \in \{100,500,1000\}$. L'on souhaite connaître le niveau qui sera dépassé tout les $100$, $500$ et $1000$ ans.
+
+\begin{table}[htp]
+	\center
+	\begin{tabular}{|c||c|c|c|}
+		\hline
+		\diagbox{Niveau de retour}{Périodes ou Années $T$} & $T = 100$ & $T = 500$ & $T = 1000$\\
+		\hline
+		$x_{\frac{1}{T}}$ & $3.99003$ & $4.413046$ & $4.563588$ \\
+		\hline
+	\end{tabular}
+	\caption{Niveaux de retour associés aux périodes de retour $T$}
+	\label{tab1}
+\end{table}
+
+\begin{table}[htp]
+	\center
+	\begin{tabular}{|c||c|c|c|}
+		\hline
+		\diagbox{Intervalles de confiance}{Périodes ou Années $T$} & $T = 100$ & $T = 500$ & $T = 1000$\\
+		\hline
+		IC de niveau $1-\alpha = 95\%$ & $[3.691942,4.288119]$ & $[3.974492,4.851601]$ & $[4.059768, 5.067409]$ \\
+		\hline
+	\end{tabular}
+	\caption{Intervalles de confiance des niveaux de retour $x_{\frac{1}{T}}$}
+	\label{tab2}
+\end{table}
+En regardant les valeurs des niveaux de retour affichés dans le tableau \ref{tab1}, on constate qu'ils sont bien tous compris dans leurs intervalles de confiance respectifs (voir tableau \ref{tab2}). Cela nous confirme une fois de plus que la taille $n$ des blocs choisis pour l'approche GEV est bonne. \\
+D'autre part, on remarque que plus la période de retour $T$ est grande et plus le niveau de retour augmente. Cette augmentation des hauteurs de vagues peut s'expliquer par la monté du niveau de la mer au file des années. On pourrait donc se demander si des plages comme celles de Carnon, Palavas ou encore La Grande-Motte existeront toujours dans 1000 ans ?
+
+\subsection{Approche GPD}
+Pour mener cette fois-ci l'étude avec l'approche GPD, il faut déterminer la valeur du seuil à utiliser. Une fois de plus, si l'on souhaite réaliser de bonnes analyses, il faut être vigilant au seuil que l'on choisit. Afin de déterminer ce dernier, nous allons nous aider de la figure \ref{mean_res}, sur laquelle est tracée le diagramme de durée de vie résiduelle moyenne (Mean residual life plot).
+
+\begin{figure}[htp] 
+	\centering
+	\includegraphics[scale=0.45]{images/res_mean.png}
+	\caption{diagramme de durée de vie résiduelle moyenne}
+	\label{mean_res}
+\end{figure}
+Sur la figure \ref{mean_res}, on voit que les pics significatifs sont atteints pour des valeurs de seuil (Threshold) valant approximativement $2.7$ et $3.65$. Nous avons donc testé ces deux valeurs de seuil et nous avons finalement retenu la valeur $3.65$. Nous allons maintenant justifier pourquoi nous avons décidé de retenir cette dernière valeur.
+
+\begin{figure}[htp] 
+	\centering
+	\subfloat[seuil $\approx 2.7$]{%
+		\includegraphics[scale=0.4]{images/sumBadth.png}%
+	}%
+	\hfill%
+	\subfloat[seuil $\approx 3.65$]{%
+		\includegraphics[scale=0.4]{images/sumGoodth.png}%
+	}%
+	\caption{Résultats donnés en sortie de la fonction \textit{fpot} pour les 2 seuils}
+	\label{summary}
+\end{figure}
+
+\begin{figure}[htp] 
+	\centering
+	\subfloat[seuil $\approx 2.7$]{%
+				\includegraphics[scale=0.4]{images/qPlotBadth.png}%
+			}%
+	\hfill%
+	\subfloat[seuil $\approx 3.65$]{%
+				\includegraphics[scale=0.4]{images/qPlotGoodth.png}%
+			}%
+	\caption{Quantile plot des 2 seuils}
+	\label{graph}
+\end{figure}
+
+En observant les résultats affichés sur les captures d'écran de la figure \ref{summary}, on voit que la proportion de valeurs dépassant le seuil (proportion above) est plus faible dans le cas où ce dernier vaut $\approx 3.65$ que dans le cas où il vaut $\approx 2.7$. \\
+De plus, en observant les graphiques (\textit{Quantile plot}) de la figure \ref{graph}, on remarque que le nuage de point du seuil $\approx 3.65$ est plus proche de la droite en diagonale que le nuage de points du seuil $\approx 2.7$. \\
+Ces résultats nous ont donc poussé à choisir le seuil$=3.65$ car il nous permettra de faire une analyse de meilleur qualité qu'avec l'autre valeur de seuil.
+
+\subsubsection{Niveaux de retour associés aux périodes de retour $100$, $500$ et $1000$}
+Maintenant que nous avons déterminer le seuil (threshold), nous allons nous intéresser comme dans le cas de l'approche GEV, aux niveaux de retour $x_{\frac{1}{T}}$ associés aux périodes de retour $T = \frac{1}{q}$ pour $T \in \{100,500,1000\}$. L'on souhaite connaître le niveau qui sera dépassé tout les $100$, $500$ et $1000$ ans avec l'approche GPD.
+
+\begin{table}[htp]
+	\center
+	\begin{tabular}{|c||c|c|c|}
+		\hline
+		\diagbox{Niveau de retour}{Périodes ou Années $T$} & $T = 100$ & $T = 500$ & $T = 1000$\\
+		\hline
+		$x_{\frac{1}{T}}$ & $4.686475$ & $4.72502$ & $4.723653$ \\
+		\hline
+	\end{tabular}
+	\caption{Niveaux de retour associés aux périodes de retour $T$}
+	\label{tab3}
+\end{table}
+Quand on regarde le tableau \ref{tab3}, on constate que le niveau de retour pour la période $T=500$ est supérieur à celui pour la période $T=100$. Cependant, pour la période $T=1000$, la valeur de $x_{\frac{1}{T}}$ est inférieur à celle trouvée pour $T = 500$. Ce qui est différent des résultats obtenus avec l'approche GEV. En effet, pour rappel, avec l'approche GEV on avait trouvé que plus la période de retour $T$ était grande et plus le niveau de retour augmentait, ce qui était cohérent avec la monté des eaux. Dans le cas de ces données, l'approche GEV est donc peut être préférable car elle fournit des résultats plus cohérents que ceux obtenus avec l'approche GPD.
+
+\section{Partie bivariée}
+Dans cette nouvelle partie, on se place maintenant dans le cas bivarié.
+Pour mener à bien les analyses nous mettrons en œuvre l'approche \textit{GEV} (Generalized Extreme Value). L'objectif sera de prédire la valeur du quantile extrême $z_p$ vérifiant:
+\[
+	\mathbb{P}(X > z_p | Y > y)
+\]
+avec $p$ petit et où $Y$ correspond à la hauteur de vagues associées à la station 2 ($S_A$) et $X$ à la hauteur de vagues associées à la station 9 ($S_B$).
+\section{Bibliographie}
+
+\renewcommand\refname{}
+\begin{thebibliography}{9}
+	\bibitem{golfLion}
+	\url{https://reporterre.net/Le-golfe-du-Lion-est-tres-vulnerable-a-la-montee-des-eaux}
+	page web rédigée par Alexandre Brun et Benoît Devillers
+\end{thebibliography}
+
+
 
 %\lstinputlisting[language=R, firstline=2, lastline=13]{code/TP3_NIASSE_COME.R}
 

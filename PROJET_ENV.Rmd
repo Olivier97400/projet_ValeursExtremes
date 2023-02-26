@@ -309,7 +309,7 @@ plot(mod_alog)
 ```
 
 ```{r}
-a=c("log", "alog", "hr", "neglog", "aneglog", "bilog","negbilog", "ct", "amix")
+a=c("log", "alog", "hr")
 aic= rep(0,length(a))
 for(i in  a){
  print(i)
@@ -338,6 +338,8 @@ nllh_model
 ```
 
 dapres le tableau des AIC si dessus le moins mauvais model est le model assymetrique logistique on voie que les estimation des lois marginau on quasiment les memes parametres que celle obtenue avec la methode univarier pas besoin de faire une transformation
+
+\###################################################################
 
 Question 4. Fonction de Pickands : Tracer les fonctions de Pickands correspondant aux modéles logistique et asymétrique logistique ainsi que celle estimée de façon non-paramétrique ? partir des max. A quoi correspond l'argument epmar de la fonction abvnonpar ?
 
