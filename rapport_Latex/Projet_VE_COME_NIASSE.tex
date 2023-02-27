@@ -66,12 +66,12 @@ Les données que nous avons à notre disposition pour ce projet sont les suivant
 	\item \textbf{DonneesStations}
 	\item \textbf{DonneesVagues}
 \end{itemize}
-Pour réaliser les analyses, nous utiliserons essentiellement les données en provenance du dataframe \textit{DonneesVagues} qui correspondent à des enregistrements de hauteurs de vagues significatives horaires de 20 stations situées dans le golf du Lion. Ces mesures horaires ont été enregistrée de 1961 à 2012. Ce dataframe est constitué de 464280 observations (en lignes) et de 21 variables (en colonnes). Decrivons un peu plus en détaille les colonnes de ce dataframe \textit{DonneesVagues}:
+Pour réaliser les analyses, nous utiliserons essentiellement les données en provenance du dataframe \textit{DonneesVagues} qui correspondent à des enregistrements de hauteurs de vagues significatives horaires de 20 stations situées dans le golf du Lion. Ces mesures horaires ont été enregistrées de 1961 à 2012. Ce dataframe est constitué de 464280 observations (en lignes) et de 21 variables (en colonnes). Décrivons un peu plus en détail les colonnes de ce dataframe \textit{DonneesVagues}:
 \begin{itemize}
-	\item \textbf{date} nous renseignent sur la date (format année mois jours) et l'heure précise (format heure minute seconde) à laquelle a été enregistrée la mesure.
-	\item \textbf{station 1 à 20} nous renseigne sur les hauteurs de la vagues mesurées
+	\item \textbf{date} nous renseigne sur la date (format année mois jours) et l'heure précise (format heure minute seconde) à laquelle a été enregistrée la mesure.
+	\item \textbf{station 1 à 20} nous renseigne sur les hauteurs de vagues mesurées
 \end{itemize}
-Le deuxième dataframe \textit{DonneesStations}, quant à lui nous renseigne sur les coordonnées géographique des 20 stations. Il est composé de 20 observation (lignes) et de 5 variables (colonnes). Décrivons un peu plus en détaille les colonnes de ce dataframe.
+Le deuxième dataframe \textit{DonneesStations}, quant à lui nous renseigne sur les coordonnées géographiques des 20 stations. Il est composé de 20 observations (lignes) et de 5 variables (colonnes). Décrivons un peu plus en détail les colonnes de ce dataframe.
 \begin{itemize}
 	\item \textbf{lon:} floatant correspondant à la longitude de la station
 	\item \textbf{lat:} floatant correspondant à la latitude de la station
@@ -102,10 +102,10 @@ Les figures \ref{data1} et \ref{data2} sont des captures d'écran d'une portion 
 
 \newpage
 
-Dans ce projet nous réaliserons dans un premier les analyses dans le cas univarié, c'est à dire en ne considérant qu'une seule station puis nous ferons une analyse bivarié en considérant cette fois-ci plusieurs stations.
+Dans ce projet nous réaliserons dans un premier temps les analyses dans le cas univarié, c'est à dire en ne considérant qu'une seule station puis nous ferons une analyse bivariée en considérant cette fois-ci plusieurs stations.
 
 \section{Partie Univariée}
-Dans cette partie nous serons dans le cas univarié en nous considérerons la station 2.
+Dans cette partie nous serons dans le cas univarié et nous considérerons la station 2.
 Pour mener à bien les analyses nous mettrons en œuvre deux approches. Dans un premier temps nous utiliserons la méthode \textit{GEV} (Generalized Extreme Value) puis dans un second temps nous utiliserons la méthode \textit{GPD}(Generalized Pareto
 distribution).
 \subsection{Approche GEV}
@@ -120,12 +120,12 @@ même taille n:
 	\underbrace{X_1, X_2,\dots, X_n}_{Z1}| \underbrace{X_{n+1}, X_{n+2},\dots, X_{2n}}_{Z2}| \dots |\underbrace {X_{(m-1)n+1}, \dots, X_{mn}}_{Zm}|
 \]
 
-On obtient alors un échantillon de $m$ réalisations de loi GEV : $Z_1, Z_2,\dots, Z_m$. %nous pouvons l'illustrer comme suit:
+On obtient alors un échantillon de $m$ réalisations de loi GEV : $Z_1, Z_2,\dots, Z_m$.
 
  Afin de faire des analyses de bonnes qualités il est nécessaire de sélectionner une taille de bloc $n$ adéquat. comme il a été dit précédemment, le dataframe \textit{DonneesVagues} est composé de $464280$ lignes.
 Afin de choisir une bonne valeur de $n$, nous avons fait un script (disponible en annexe) qui affiche tous les diviseurs de $464280$, ces derniers sont affichés en figure \ref{diviseurs}. À partir de là nous avons pu tester plusieurs valeurs de $m$ et nous avons finalement pris $m=2980$. Nous aurons donc $2980$ blocs tous de même taille $n=159$. Nous allons maintenant justifier pourquoi nous avons décidé de retenir cette valeur. \\
-Les points du graphique de la figure \ref{graph_max}, correspondent aux maximums de chaque blocs. Comme on peut le voir, le nuage de point obtenu est assez dispersé ce qui nous conforte dans l'idée que le paramètre $n$ a été bien choisi. \\
-D'autre part, nous allons également nous appuyer sur le graphique du \textit{Quantile plot} afin de voir si le paramètre $n$ a bien été choisi. On rappel que le Quantile plot est le nuage de points: \\
+Les points du graphique de la figure \ref{graph_max}, correspondent aux maximums de chaque bloc. Comme on peut le voir, le nuage de points obtenu est assez dispersé ce qui nous conforte dans l'idée que le paramètre $n$ a été bien choisi. \\
+D'autre part, nous allons également nous appuyer sur le graphique du \textit{Quantile plot} afin de voir si le paramètre $n$ a bien été choisi. On rappelle que le Quantile plot est le nuage de points: \\
 
 \[
 	\Bigl\{\Big(\widehat{G}^{-1}\Big(\frac{i}{m+1}\Big),z_{i,m}\Big), i = 1,\dots, m\Bigr\}
@@ -137,7 +137,7 @@ Où
 	\widehat{G}(\frac{i}{m+1}) = \widehat{\mu} - \frac{\widehat{\sigma}}{\widehat{\gamma}} \Big[ 1- \Big(-log\Big(\frac{i}{i+1}\Big)\Big)^{-\widehat{\gamma}}\Big]
 \]
 
-Si l'on observe le graphique de la figure \ref{qplot}, on s'aperçoit que les points du nuages sont proches de la diagonale (ligne bleu) donc l'ajustement est de bonne qualité, la taille des blocs retenu pour l'approche GEV a donc bien été choisi. 
+Si l'on observe le graphique de la figure \ref{qplot}, on s'aperçoit que les points du nuage sont proches de la diagonale (ligne bleue) donc l'ajustement est de bonne qualité, la taille des blocs retenue pour l'approche GEV a donc été bien choisie. 
 
 
 \begin{figure}[htp] 
@@ -165,7 +165,7 @@ Si l'on observe le graphique de la figure \ref{qplot}, on s'aperçoit que les po
 
 \subsubsection{Niveaux de retour associés aux périodes de retour $100$, $500$ et $1000$}
 
-Dans cette sous-section, nous allons nous intéresser aux niveaux de retour $x_{\frac{1}{T}}$ associés aux périodes de retour $T = \frac{1}{q}$ pour $T \in \{100,500,1000\}$. L'on souhaite connaître le niveau qui sera dépassé tout les $100$, $500$ et $1000$ ans.
+Dans cette sous-section, nous allons nous intéresser aux niveaux de retour $x_{\frac{1}{T}}$ associés aux périodes de retour $T = \frac{1}{q}$ pour $T \in \{100,500,1000\}$. L'on souhaite connaître le niveau qui sera dépassé tous les $100$, $500$ et $1000$ ans.
 
 \begin{table}[htp]
 	\center
@@ -192,11 +192,11 @@ Dans cette sous-section, nous allons nous intéresser aux niveaux de retour $x_{
 	\caption{Intervalles de confiance des niveaux de retour $x_{\frac{1}{T}}$}
 	\label{tab2}
 \end{table}
-En regardant les valeurs des niveaux de retour affichés dans le tableau \ref{tab1}, on constate qu'ils sont bien tous compris dans leurs intervalles de confiance respectifs (voir tableau \ref{tab2}). Cela nous confirme une fois de plus que la taille $n$ des blocs choisis pour l'approche GEV est bonne. \\
-D'autre part, on remarque que plus la période de retour $T$ est grande et plus le niveau de retour augmente. Cette augmentation des hauteurs de vagues peut s'expliquer par la monté du niveau de la mer au file des années. On pourrait donc se demander si des plages comme celles de Carnon, Palavas ou encore La Grande-Motte existeront toujours dans 1000 ans ?
+En regardant les valeurs des niveaux de retour affichées dans le tableau \ref{tab1}, on constate qu'elles sont bien toutes comprises dans leurs intervalles de confiance respectifs (voir tableau \ref{tab2}). Cela nous confirme une fois de plus que la taille $n$ des blocs choisis pour l'approche GEV est bonne. \\
+D'autre part, on remarque que plus la période de retour $T$ est grande et plus le niveau de retour augmente. Cette augmentation des hauteurs de vagues peut s'expliquer par la montée du niveau de la mer au fil des années. On pourrait donc se demander si des plages comme celles de Carnon, Palavas ou encore La Grande-Motte existeront toujours dans 1000 ans ?
 
 \subsection{Approche GPD}
-Pour mener cette fois-ci l'étude avec l'approche GPD, il faut déterminer la valeur du seuil à utiliser. Une fois de plus, si l'on souhaite réaliser de bonnes analyses, il faut être vigilant au seuil que l'on choisit. Afin de déterminer ce dernier, nous allons nous aider de la figure \ref{mean_res}, sur laquelle est tracée le diagramme de durée de vie résiduelle moyenne (Mean residual life plot).
+Pour mener cette fois-ci l'étude avec l'approche GPD, il faut déterminer la valeur du seuil à utiliser. Une fois de plus, si l'on souhaite réaliser de bonnes analyses, il faut être vigilant au seuil que l'on choisit. Afin de déterminer ce dernier, nous allons nous aider de la figure \ref{mean_res}, sur laquelle est tracé le diagramme de durée de vie résiduelle moyenne (Mean residual life plot).
 
 \begin{figure}[htp] 
 	\centering
@@ -233,11 +233,11 @@ Sur la figure \ref{mean_res}, on voit que les pics significatifs sont atteints p
 \end{figure}
 
 En observant les résultats affichés sur les captures d'écran de la figure \ref{summary}, on voit que la proportion de valeurs dépassant le seuil (proportion above) est plus faible dans le cas où ce dernier vaut $\approx 3.65$ que dans le cas où il vaut $\approx 2.7$. \\
-De plus, en observant les graphiques (\textit{Quantile plot}) de la figure \ref{graph}, on remarque que le nuage de point du seuil $\approx 3.65$ est plus proche de la droite en diagonale que le nuage de points du seuil $\approx 2.7$. \\
-Ces résultats nous ont donc poussé à choisir le seuil$=3.65$ car il nous permettra de faire une analyse de meilleur qualité qu'avec l'autre valeur de seuil.
+De plus, en observant les graphiques (\textit{Quantile plot}) de la figure \ref{graph}, on remarque que le nuage de points du seuil $\approx 3.65$ est plus proche de la droite en diagonale que le nuage de points du seuil $\approx 2.7$. \\
+Ces résultats nous ont donc poussés à choisir le seuil$=3.65$ car il nous permettra de faire une analyse de meilleure qualité qu'avec l'autre valeur de seuil.
 
 \subsubsection{Niveaux de retour associés aux périodes de retour $100$, $500$ et $1000$}
-Maintenant que nous avons déterminer le seuil (threshold), nous allons nous intéresser comme dans le cas de l'approche GEV, aux niveaux de retour $x_{\frac{1}{T}}$ associés aux périodes de retour $T = \frac{1}{q}$ pour $T \in \{100,500,1000\}$. L'on souhaite connaître le niveau qui sera dépassé tout les $100$, $500$ et $1000$ ans avec l'approche GPD.
+Maintenant que nous avons déterminer le seuil (threshold), nous allons nous intéresser comme dans le cas de l'approche GEV, aux niveaux de retour $x_{\frac{1}{T}}$ associés aux périodes de retour $T = \frac{1}{q}$ pour $T \in \{100,500,1000\}$. L'on souhaite connaître le niveau qui sera dépassé tous les $100$, $500$ et $1000$ ans avec l'approche GPD.
 
 \begin{table}[htp]
 	\center
@@ -251,7 +251,7 @@ Maintenant que nous avons déterminer le seuil (threshold), nous allons nous int
 	\caption{Niveaux de retour associés aux périodes de retour $T$}
 	\label{tab3}
 \end{table}
-Quand on regarde le tableau \ref{tab3}, on constate que le niveau de retour pour la période $T=500$ est supérieur à celui pour la période $T=100$. Cependant, pour la période $T=1000$, la valeur de $x_{\frac{1}{T}}$ est inférieur à celle trouvée pour $T = 500$. Ce qui est différent des résultats obtenus avec l'approche GEV. En effet, pour rappel, avec l'approche GEV on avait trouvé que plus la période de retour $T$ était grande et plus le niveau de retour augmentait, ce qui était cohérent avec la monté des eaux. Dans le cas de ces données, l'approche GEV est donc peut être préférable car elle fournit des résultats plus cohérents que ceux obtenus avec l'approche GPD.
+Quand on regarde le tableau \ref{tab3}, on constate que le niveau de retour pour la période $T=500$ est supérieur à celui pour la période $T=100$. Cependant, pour la période $T=1000$, la valeur de $x_{\frac{1}{T}}$ est inférieur à celle trouvée pour $T = 500$. Ce qui est différent des résultats obtenus avec l'approche GEV. En effet, pour rappel, avec l'approche GEV on avait trouvé que plus la période de retour $T$ était grande et plus le niveau de retour augmentait, ce qui était cohérent avec la montée des eaux. Dans le cas de ces données, l'approche GEV est donc peut être préférable car elle fournit des résultats plus cohérents que ceux obtenus avec l'approche GPD.
 
 \section{Partie bivariée}
 Dans cette nouvelle partie, on se place maintenant dans le cas bivarié.
@@ -265,7 +265,7 @@ Pour mener à bien les analyses dans toute la suite de ce projet, nous mettrons 
 
 \subsection{Analyse entre les stations 2 et 9}
 
-Sur la figure \ref{max_SB_SA} nous avons tracé deux nuages de points. Les points du nuage rouge correspondent aux maximums de chaque bloc dans le cas de la station $S_B$ et ceux du nuage bleu aux maximums de chaque bloc dans le cas de la station $S_A$. Les points des deux nuages sont assez ben dispersés.
+Sur la figure \ref{max_SB_SA} nous avons tracé deux nuages de points. Les points du nuage rouge correspondent aux maximums de chaque bloc dans le cas de la station $S_B$ et ceux du nuage bleu aux maximums de chaque bloc dans le cas de la station $S_A$. Les points des deux nuages sont assez bien dispersés.
 \begin{figure}[htp] 
 	\centering
 	\includegraphics[scale=0.45]{images/max_SB_SA.png}
@@ -273,7 +273,7 @@ Sur la figure \ref{max_SB_SA} nous avons tracé deux nuages de points. Les point
 	\label{max_SB_SA}
 \end{figure}
 
-Nous allons maintenant effectuer un ajustement par une loi GEV sur chacune de deux marginales et nous allons récupérer les paramètres pour chaque ajustement des marginales. Nous les avons affiché dans le tableau \ref{param}.
+Nous allons maintenant effectuer un ajustement par une loi GEV sur chacune de deux marginales et nous allons récupérer les paramètres pour chaque ajustement des marginales. Nous les avons affichés dans le tableau \ref{param}.
 
 \begin{table}[htp]
 	\center
@@ -293,16 +293,16 @@ Nous allons maintenant effectuer un ajustement par une loi GEV sur chacune de de
 \end{table}
 
 Calculons la probabilité de l'équation \ref{quantile_extreme}. \\
-Les paramètres du tableau \ref{param} vont nous aider à calculer cette probabilité. En effet, il seront utilisés dans la fonction $pgev$ de $R$ qui va nous permettre de déterminer le dénominateur $\mathbb{P}(Y > y)$.\\
+Les paramètres du tableau \ref{param} vont nous aider à calculer cette probabilité. En effet, ils seront utilisés dans la fonction $pgev$ de $R$ qui va nous permettre de déterminer le dénominateur $\mathbb{P}(Y > y)$.\\
 on rappelle qu'ici, à titre d'exemple nous avons choisi la valeur $y = 4$. \\
 Après calcul, on trouve que $\mathbb{P}(Y > 4)=0.4041958$. \\
 Nous avons également besoin de calculer le numérateur à savoir $\mathbb{P}(X > z_p \cap Y > y)$. \\
-La fonction $fbvevd$ de $R$ nous permettra de récupérer les paramètres ($loc$,$scale$ et $shape$) nécessaires au calcul du numérateur. La valeur de ce dernier est ensuite obtenu via la fonction $pbvevd$ et on obtient que $\mathbb{P}(X > z_p \cap Y > 4) = 0.01589988$.\\
-On en déduit donc que $\mathbb{P}(X > z_p | Y > 4) = 0.03933707$. C'est à dire que la probabilité que la hauteur de la vague de la station 9 soit supérieure $z_p$ sachant que la hauteur de la vague de la station 2 est supérieur à 4 vaut environ $3.93\%$.
+La fonction $fbvevd$ de $R$ nous permettra de récupérer les paramètres ($loc$,$scale$ et $shape$) nécessaires au calcul du numérateur. La valeur de ce dernier est ensuite obtenue via la fonction $pbvevd$ et on obtient que $\mathbb{P}(X > z_p \cap Y > 4) = 0.01589988$.\\
+On en déduit donc que $\mathbb{P}(X > z_p | Y > 4) = 0.03933707$. C'est à dire que la probabilité que la hauteur de la vague de la station 9 soit supérieure $z_p$ sachant que la hauteur de la vague de la station 2 est supérieure à 4 vaut environ $3.93\%$.
 
 \vspace{4mm}
 
-Nous allons maintenant procéder à une analyse bivarié entre les stations 2 et 9. La figure \ref{double_max} représente la hauteurs maximales des vagues selon les blocs pour les stations 2 et 9. Après observation de ce nuage de points, il semblerait que les données des deux stations ne soient pas corrélées entre elles car le nuage est assez dispersé. 
+Nous allons maintenant procéder à une analyse bivariée entre les stations 2 et 9. La figure \ref{double_max} représente les hauteurs maximales des vagues selon les blocs pour les stations 2 et 9. Après observation de ce nuage de points, il semblerait que les données des deux stations ne soient pas corrélées entre elles car le nuage est assez dispersé. 
 
 \begin{figure}[htp] 
 	\centering
@@ -337,8 +337,8 @@ Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log
 \end{figure}
 
 \subsection{Analyse entre les stations 2 et 7}
-Dans cette partie, nous cherchons dans un premier temps une station notée $S_C$ qui est plus proche de $S_A$ que $S_B$. Une fois que nous l'aurons trouvé, nous ferons une analyse entre notre station de référence $S_A$ et la nouvelle station $S_C$.
-Pour déterminer $S_C$, nous avons utiliser la norme euclidienne présentée dans le document \cite{norme_euclid} et nous avons appliqué les formules \ref{euclidienne1} et \ref{euclidienne2} sur les coordonnées géographiques des stations (longitude et latitude) disponibles dans le dataframe \textit{DonneesStations}.
+Dans cette partie, nous cherchons dans un premier temps une station notée $S_C$ qui est plus proche de $S_A$ que $S_B$. Une fois que nous l'aurons trouvée, nous ferons une analyse entre notre station de référence $S_A$ et la nouvelle station $S_C$.
+Pour déterminer $S_C$, nous avons utilisé la norme euclidienne présentée dans le document \cite{norme_euclid} et nous avons appliqué les formules \ref{euclidienne1} et \ref{euclidienne2} sur les coordonnées géographiques des stations (longitude et latitude) disponibles dans le dataframe \textit{DonneesStations}.
 
 \begin{equation}
 	\label{euclidienne1}
@@ -359,11 +359,11 @@ Donc le choix de la station 7 est valide car cette dernière est effectivement p
 
 \vspace{3mm}
 
-Sur la figure \ref{max_SA_SC} nous avons tracé deux nuages de points. Les points du nuage magenta correspondent aux maximums de chaque bloc dans le cas de la station $S_C$ et ceux du nuage bleu clair aux maximums de chaque bloc dans le cas de la station $S_A$. Les points des deux nuages sont assez ben dispersés.
+Sur la figure \ref{max_SA_SC} nous avons tracé deux nuages de points. Les points du nuage magenta correspondent aux maximums de chaque bloc dans le cas de la station $S_C$ et ceux du nuage bleu clair aux maximums de chaque bloc dans le cas de la station $S_A$. Les points des deux nuages sont assez bien dispersés.
 \begin{figure}[htp] 
 	\centering
 	\includegraphics[scale=0.45]{images/max_SA_SC.png}
-	\caption{Nuage de points obtenu avec la methode par bloc pour $S_A$ et $S_C$}
+	\caption{Nuage de points obtenu avec la méthode par bloc pour $S_A$ et $S_C$}
 	\label{max_SA_SC}
 \end{figure}
 
@@ -376,7 +376,7 @@ Nous allons maintenant procéder à une analyse bivariée entre les stations 2 e
 	\label{double_max2}
 \end{figure}
 
-Dans la suite de cette partie, nous allons faire des analyses plus fines afin de voir s'il y a plus de corrélations entre les données des stations 2 et 7. Logiquement vu que les stations 2 et 7 sont plus proches l'une de l'autre que les stations 2 et 9, il devrait y avoir ici plus de corrélations. Vérifions le. pour ce faire nous allons encore une fois utiliser les modèles d'estimation paramétrique logistique et celui logistique asymétrique. Nous allons ensuite sélectionner le meilleur de ces deux modèles à l'aide du critère AIC.
+Dans la suite de cette partie, nous allons faire des analyses plus fines afin de voir s'il y a plus de corrélations entre les données des stations 2 et 7. Logiquement vu que les stations 2 et 7 sont plus proches l'une de l'autre que les stations 2 et 9, il devrait y avoir ici plus de corrélations. Vérifions le. Pour ce faire nous allons encore une fois utiliser les modèles d'estimation paramétrique logistique et celui logistique asymétrique. Nous allons ensuite sélectionner le meilleur de ces deux modèles à l'aide du critère AIC.
 
 D'après la capture d'écran de la figure \ref{AIC_2_7}, le modèle logistique est celui ayant l'AIC le plus faible avec une valeur de $590.3655$ contre $596.5881$ pour le modèle logistique asymétrique. On en déduit donc que le meilleur des deux modèles est celui logistique ($log$) et c'est donc ce dernier que nous sélectionnerons.
 
@@ -387,7 +387,7 @@ D'après la capture d'écran de la figure \ref{AIC_2_7}, le modèle logistique e
 	\label{AIC_2_7}
 \end{figure}
 
-Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log2}, on voit que la valeur du paramètre dépendance vaut $0.5290586$. Il est donc plus grand que dans le cas des stations 2 et 9 (voir figure \ref{dependance_log}). Ceci est parfaitement cohérent avec ce que l'on avait dit précédemment. En effet, plus l'on va prendre de stations proches entre elles et plus il y aura de corrélations entre les données de ces dernières.
+Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log2}, on voit que la valeur du paramètre dépendance vaut $0.5290586$. Il est donc plus grand que dans le cas des stations 2 et 9 (voir figure \ref{dependance_log}). Ceci est parfaitement cohérent avec ce que l'on avait dit précédemment. En effet, plus l'on va prendre des stations proches entre elles et plus il y aura de corrélations entre les données de ces dernières.
 
 \begin{figure}[htp] 
 	\centering
@@ -398,7 +398,7 @@ Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log
 
 
 \subsection{Analyse entre les stations 9 et 4}
-Dans cette partie, nous cherchons dans un premier temps une station notée $S_D$ qui est plus proche de $S_B$ que $S_A$. Une fois que nous l'aurons trouvé, nous ferons une analyse entre la station $S_B$ et la nouvelle station $S_D$.
+Dans cette partie, nous cherchons dans un premier temps une station notée $S_D$ qui est plus proche de $S_B$ que $S_A$. Une fois que nous l'aurons trouvée, nous ferons une analyse entre la station $S_B$ et la nouvelle station $S_D$.
 Pour déterminer $S_D$, nous avons utiliser comme dans la partie précédente, la norme euclidienne et nous avons appliqué les formules \ref{euclidienne3} et \ref{euclidienne4} sur les coordonnées géographiques des stations (longitude et latitude) disponibles dans le dataframe \textit{DonneesStations}.
 
 \begin{equation}
@@ -437,7 +437,7 @@ Nous allons maintenant procéder à une analyse bivariée entre les stations 9 e
 	\label{double_max3}
 \end{figure}
 
-Dans la suite de cette partie, nous allons faire des analyses plus fines afin de voir s'il y a plus de corrélations entre les données des stations 9 et 4. Logiquement vu que les stations 9 et 4 sont plus proches l'une de l'autre que les stations 2 et 9, il devrait y avoir ici plus de corrélations. Vérifions le. pour ce faire nous allons encore une fois utiliser les modèles d'estimation paramétrique logistique et celui logistique asymétrique. Nous allons ensuite sélectionner le meilleur de ces deux modèles à l'aide du critère AIC.
+Dans la suite de cette partie, nous allons faire des analyses plus fines afin de voir s'il y a plus de corrélations entre les données des stations 9 et 4. Logiquement vu que les stations 9 et 4 sont plus proches l'une de l'autre que les stations 2 et 9, il devrait y avoir ici plus de corrélations. Vérifions le. Pour ce faire nous allons encore une fois utiliser les modèles d'estimation paramétrique logistique et celui logistique asymétrique. Nous allons ensuite sélectionner le meilleur de ces deux modèles à l'aide du critère AIC.
 
 \newpage
 
@@ -450,7 +450,7 @@ D'après la capture d'écran de la figure \ref{AIC_9_4}, le modèle logistique e
 	\label{AIC_9_4}
 \end{figure}
 
-Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log3}, on voit que la valeur du paramètre dépendance vaut $0.383155$. Il est donc légèrement plus grand que dans le cas des stations 2 et 9 (voir figure \ref{dependance_log}). Ici la station $S_D$ est légèrement plus proche de $S_B$ qu'elle ne l'est de $S_A$, c'est pourquoi la corrélation entre les données de $S_B$ et $S_D$ n'est que légèrement plus grande que celle entre les données de $S_A$ et $S_B$. Si l'on voudrait avoir une corrélation plus élevée, il faudrait choisir une station qui serait à la fois encore plus proche de $S_B$ et encore plus éloigné de $S_A$. Au final, même si ici la différence est moins marquante que pour la station 2 et 7, on constate toujours que plus l'on va prendre de stations proches entre elles et plus il y aura de corrélations entre les données de ces dernières.
+Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log3}, on voit que la valeur du paramètre dépendance vaut $0.383155$. Il est donc légèrement plus grand que dans le cas des stations 2 et 9 (voir figure \ref{dependance_log}). Ici la station $S_D$ est légèrement plus proche de $S_B$ qu'elle ne l'est de $S_A$, c'est pourquoi la corrélation entre les données de $S_B$ et $S_D$ n'est que légèrement plus grande que celle entre les données de $S_A$ et $S_B$. Si l'on voulait avoir une corrélation plus élevée, il faudrait choisir une station qui serait à la fois encore plus proche de $S_B$ et encore plus éloignée de $S_A$. Au final, même si ici la différence est moins marquante que pour la station 2 et 7, on constate toujours que plus l'on va prendre des stations proches entre elles et plus il y aura de corrélations entre les données de ces dernières.
 
 \begin{figure}[htp] 
 	\centering
@@ -462,8 +462,96 @@ Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log
 \newpage
 
 \section{Conclusion}
-À travers ce projet, nous avons pu voir qu'au file des années, nous serons confrontés à des valeurs extrêmes de vagues de plus en plus grandes. Cela est sans aucun doute une conséquence de la hausse des températures et en particulier de la monté du niveau des oceans. Nous comprenons donc pourquoi la lutte contre le réchauffement climatique est au cœur des enjeux scientifiques actuels. D'autre part, nous avons pu constater que plus nous prendrons des mesures issues de stations proches et plus les données associées à ces dernières seront fortement corrélées. 
+À travers ce projet, nous avons pu voir qu'au fil des années, nous serons confrontés à des valeurs extrêmes de vagues de plus en plus grandes. Cela est sans aucun doute une conséquence de la hausse des températures et en particulier de la montée du niveau des océans. Nous comprenons donc pourquoi la lutte contre le réchauffement climatique est au cœur des enjeux scientifiques actuels. D'autre part, nous avons pu constater que plus nous prendrons des mesures issues de stations proches et plus les données associées à ces dernières seront fortement corrélées. 
 
+
+\newpage
+
+\section{Annexes}
+Ci dessous, l'export de code permettant d'afficher la liste des diviseurs de $464280$.
+\lstinputlisting[language=R, firstline=19, lastline=26]{code/script_projet_VE_COME_NIASSE.R}
+
+Dans l'export de code ci dessous on applique la méthode par bloc puis on affiche le nuage de points des maximums des blocs.
+\lstinputlisting[language=R, firstline=38, lastline=40]{code/script_projet_VE_COME_NIASSE.R}
+
+La fonction affichée ci-dessous permet d'afficher les graphiques de diagnostics tels que le $Quantile$ $Plot$ et le $Probability$ $Plot$.
+\lstinputlisting[language=R, firstline=45, lastline=45]{code/script_projet_VE_COME_NIASSE.R}
+
+Dans l'export de code ci-dessous, on affiche la valeur du niveau de retour $x_{\frac{1}{T}}$ associée à la période de retour $T=100$ ainsi qu'un intervalle de confiance de niveau $1- \alpha = 95\%$
+\lstinputlisting[language=R, firstline=49, lastline=59]{code/script_projet_VE_COME_NIASSE.R}
+
+Dans l'export de code ci-dessous, on affiche la valeur du niveau de retour $x_{\frac{1}{T}}$ associée à la période de retour $T=500$ ainsi qu'un intervalle de confiance de niveau $1- \alpha = 95\%$
+\lstinputlisting[language=R, firstline=62, lastline=72]{code/script_projet_VE_COME_NIASSE.R}
+
+\newpage
+
+Dans l'export de code ci-dessous, on affiche la valeur du niveau de retour $x_{\frac{1}{T}}$ associée à la période de retour $T=1000$ ainsi qu'un intervalle de confiance de niveau $1- \alpha = 95\%$
+\lstinputlisting[language=R, firstline=75, lastline=85]{code/script_projet_VE_COME_NIASSE.R}
+
+La fonction ci-dessous affiche le \textit{Mean Residual Life Plot}
+\lstinputlisting[language=R, firstline=88, lastline=88]{code/script_projet_VE_COME_NIASSE.R}
+
+Via l'export de code ci-dessous, on met en œuvre l'approche GPD avec la fonction $fpot$ et on affiche les graphiques de diagnostics (th correspond au seuil threshold).
+\lstinputlisting[language=R, firstline=97, lastline=102]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous permet de calculer le niveau de retour $x_{\frac{1}{T}}$ associé à la période de retour $T = 100$ avec l'approche GPD, $n = 2920$ correspond au nombre de blocs.
+\lstinputlisting[language=R, firstline=107, lastline=111]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous permet de calculer le niveau de retour $x_{\frac{1}{T}}$ associé à la période de retour $T = 500$ avec l'approche GPD, $n = 2920$ correspond au nombre de blocs.
+\lstinputlisting[language=R, firstline=114, lastline=118]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous permet de calculer le niveau de retour $x_{\frac{1}{T}}$ associé à la période de retour $T = 1000$ avec l'approche GPD, $n = 2920$ correspond au nombre de blocs.
+\lstinputlisting[language=R, firstline=120, lastline=124]{code/script_projet_VE_COME_NIASSE.R}
+
+\newpage
+
+Ajustement par une loi GEV pour chacune des deux marginales. \\
+Récupération des paramètres chaque ajustement des marginales.
+
+\lstinputlisting[language=R, firstline=157, lastline=168]{code/script_projet_VE_COME_NIASSE.R}
+
+Calcul du dénominateur $\mathbb{P}(Y > y)$
+\lstinputlisting[language=R, firstline=173, lastline=176]{code/script_projet_VE_COME_NIASSE.R}
+
+Avec la commande ci dessous, on récupère les paramètres utiles pour calculer le numérateur \\ 
+$\mathbb{P}(X > z_p \cap Y > y)$ 
+\lstinputlisting[language=R, firstline=179, lastline=179]{code/script_projet_VE_COME_NIASSE.R}
+
+Via l'export de code ci-dessous, on calcule le numérateur $\mathbb{P}(X > z_p \cap Y > y)$
+\lstinputlisting[language=R, firstline=185, lastline=188]{code/script_projet_VE_COME_NIASSE.R}
+
+Affichage du nuage de points bivarié
+\lstinputlisting[language=R, firstline=192, lastline=192]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous nous permet de sélectionner le meilleur modèle à l'aide du critère AIC
+\lstinputlisting[language=R, firstline=195, lastline=202]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous nous permet d'ajuster le meilleur modèle et de vérifier le niveau de corrélation des données
+\lstinputlisting[language=R, firstline=208, lastline=211]{code/script_projet_VE_COME_NIASSE.R}
+
+Dans l'export de code ci-dessous, on calcule la distance séparant la station 2 et la station 7 ainsi que la distance séparant la station 9 avec la station 7.
+\lstinputlisting[language=R, firstline=225, lastline=226]{code/script_projet_VE_COME_NIASSE.R}
+
+Affichage du nuage de points bivarié pour les stations 2 et 7
+\lstinputlisting[language=R, firstline=248, lastline=248]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous nous permet de sélectionner le meilleur modèle à l'aide du critère AIC
+\lstinputlisting[language=R, firstline=251, lastline=258]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous nous permet d'ajuster le meilleur modèle et de vérifier le niveau de corrélation des données
+\lstinputlisting[language=R, firstline=264, lastline=267]{code/script_projet_VE_COME_NIASSE.R}
+
+Dans l'export de code ci-dessous, on calcule la distance séparant la station 4 et la station 9 ainsi que la distance séparant la station 4 avec la station 2.
+\lstinputlisting[language=R, firstline=272, lastline=273]{code/script_projet_VE_COME_NIASSE.R}
+
+Affichage du nuage de points bivarié pour les stations 4 et 9
+\lstinputlisting[language=R, firstline=294, lastline=294]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous nous permet de sélectionner le meilleur modèle à l'aide du critère AIC
+\lstinputlisting[language=R, firstline=297, lastline=304]{code/script_projet_VE_COME_NIASSE.R}
+
+L'export de code ci-dessous nous permet d'ajuster le meilleur modèle et de vérifier le niveau de corrélation des données
+\lstinputlisting[language=R, firstline=310, lastline=313]{code/script_projet_VE_COME_NIASSE.R}
 
 \newpage
 
@@ -483,7 +571,5 @@ Ajustons maintenant le modèle $log$. En observant la figure \ref{dependance_log
 	\url{https://www.normalesup.org/~simonet/teaching/caml-prepa/tp-caml-2001-02.pdf}
 	TP MPSI – Option Informatique rédigé par Vincent Simonet en 2021
 \end{thebibliography}
-
-%\lstinputlisting[language=R, firstline=2, lastline=13]{code/TP3_NIASSE_COME.R}
 
 \end{document}
